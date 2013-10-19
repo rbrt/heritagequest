@@ -15,8 +15,8 @@ public class Basket : MonoBehaviour {
 		basketCount--;
 		Debug.Log (basketCount);
 		if (basketCount == 0){
-			return true;
 			basketCount--;
+			return true;
 		}
 		// Avoid duplicate basket removals or something
 		else if (basketCount < 0){

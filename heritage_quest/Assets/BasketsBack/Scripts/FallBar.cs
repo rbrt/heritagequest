@@ -21,10 +21,6 @@ public class FallBar : MonoBehaviour {
 	}
 	
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.P)){
-			GetHit();
-		}
-		
 		Vector3 scale = fallbar.scale;
 		scale.x = Mathf.Lerp(scale.x, target, Time.deltaTime * 5);	
 		fallbar.scale = scale;
@@ -44,5 +40,9 @@ public class FallBar : MonoBehaviour {
 	
 	public void CanHitAgain(){
 		canHit = true;
+	}
+	
+	public bool GetCanHit(){
+		return canHit;
 	}
 }

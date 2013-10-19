@@ -3,55 +3,155 @@ using System.Collections;
 
 public class Enemy : MonoBehaviour {
 	
-	public GameObject player;
+	public GameObject player,
+				      fallBar;
 	
 	bool isMovingLeft = false,
 		 isMovingRight = false,
-		 isJumping = false,
-		 ladderInPlay = false,
-		 isClimbingUp = false,
-		 isClimbingDown = false,
-		 isPunching = false,
-		 isFacingLeft = true, // punch direction
-		 isInLeftBasket = false,
-		 isInRightBasket = false;
+		 isPunching = false;
 	
-	float jumpVal = 10,
-		  moveSpeed = 1,
-	 	  jumpSpeed = 10,
-		  climbingSpeed = 10,
-		  startHeight;
-	
-	// Use this for initialization
+	float moveSpeed = 2;
 	
 	
 	// Update is called once per frame
 	void Update () {
-		// Player to the right
-		if (player.transform.position.x < transform.position.x - 4){
-			isMovingLeft = true;
-			isMovingRight = false;
-		}
-		// Player to the left
-		else if (player.transform.position.x > transform.position.x + 4){
-			isMovingRight = true;
-			isMovingLeft = false;
-		}
-		// Player is close to the enemy
-		else{
-			isMovingLeft = false;
-			isMovingRight = false;
+		
+		if (!isPunching){
+			// Player to the left
+			if (player.transform.position.x < transform.position.x - 4){
+				if (!isMovingLeft){
+					isMovingLeft = true;
+					isMovingRight = false;
+					StartCoroutine(RunLeftCoroutine());
+				}
+			}
+			// Player to the right
+			else if (player.transform.position.x > transform.position.x + 4){
+				if (!isMovingRight){
+					isMovingRight = true;
+					isMovingLeft = false;
+					StartCoroutine(RunRightCoroutine());
+				}
+			}
+			// Player is close to the enemy
+			else{
+				isMovingLeft = false;
+				isMovingRight = false;
+				if (fallBar.GetComponent<FallBar>().GetCanHit()){
+					isPunching = true;
+					if (player.transform.position.x < transform.position.x){
+						StartCoroutine(PunchLeftCoroutine());
+					}
+					else{
+						StartCoroutine(PunchRightCoroutine());
+					}
+				}
+			}
 		}
 		
 		Vector3 pos = transform.position;
 		
-		if (isMovingLeft){
-			pos.x  = Mathf.Lerp(pos.x, player.transform.position.x + 1, Time.deltaTime * moveSpeed);
+		if (isMovingRight){
+			pos.x  = Mathf.Lerp(pos.x, pos.x + 1, Time.deltaTime * moveSpeed);
 		}
-		else if (isMovingRight){
-			pos.x  = Mathf.Lerp(pos.x, player.transform.position.x - 1, Time.deltaTime * moveSpeed);
+		else if (isMovingLeft){
+			pos.x  = Mathf.Lerp(pos.x, pos.x - 1, Time.deltaTime * moveSpeed);
 		}
 		
 		transform.position = pos;
+	}
+	
+	
+	bool PlayerInRange(){
+		return Mathf.Abs(player.transform.position.x - transform.position.x) < 5;
+	}
+	
+	
+	IEnumerator RunLeftCoroutine(){
+		tk2dSprite sprite = GetComponent<tk2dSprite>();
+		
+		int count = 0;
+		int[] indices = new int[]{sprite.GetSpriteIdByName("basketballrunleft1"),
+								  sprite.GetSpriteIdByName("basketballrunleft2"),
+								  sprite.GetSpriteIdByName("basketballrunleft1"),
+								  sprite.GetSpriteIdByName("basketballplayer 1")};
+		while (isMovingLeft){
+			if (count >= indices.Length){
+				count = 0;
+			}
+			else{
+				sprite.SetSprite(indices[count]);
+				count++;	
+				yield return new WaitForSeconds(.1f);
+			}
+		}
+		sprite.SetSprite(indices[indices.Length-1]);
+	}
+	
+	IEnumerator RunRightCoroutine(){
+		tk2dSprite sprite = GetComponent<tk2dSprite>();
+		
+		int count = 0;
+		int[] indices = new int[]{sprite.GetSpriteIdByName("basketballrunright1"),
+								  sprite.GetSpriteIdByName("basketballrunright2"),
+								  sprite.GetSpriteIdByName("basketballrunright1"),
+								  sprite.GetSpriteIdByName("basketballplayer 1")};
+		while (isMovingRight){
+			if (count >= indices.Length){
+				count = 0;
+			}
+			else{
+				sprite.SetSprite(indices[count]);
+				count++;	
+				yield return new WaitForSeconds(.1f);
+			}
+		}
+		sprite.SetSprite(indices[indices.Length-1]);
+	}
+	
+	IEnumerator PunchLeftCoroutine(){
+		tk2dSprite sprite = GetComponent<tk2dSprite>();
+		
+		int count = 0;
+		int[] indices = new int[]{sprite.GetSpriteIdByName("basketpunchleft1"),
+								  sprite.GetSpriteIdByName("basketpunchleft2"),
+								  sprite.GetSpriteIdByName("basketpunchleft1"),
+								  sprite.GetSpriteIdByName("basketballplayer 1")};
+		while (isPunching){
+			if (count >= indices.Length){
+				isPunching = false;
+				if (PlayerInRange()){
+					fallBar.GetComponent<FallBar>().GetHit();
+				}
+			}
+			else{
+				sprite.SetSprite(indices[count]);
+				count++;	
+				yield return new WaitForSeconds(.1f);
+			}
+		}
+	}
+	
+	IEnumerator PunchRightCoroutine(){
+		tk2dSprite sprite = GetComponent<tk2dSprite>();
+		
+		int count = 0;
+		int[] indices = new int[]{sprite.GetSpriteIdByName("basketpunchright1"),
+								  sprite.GetSpriteIdByName("basketpunchright2"),
+								  sprite.GetSpriteIdByName("basketpunchright1"),
+								  sprite.GetSpriteIdByName("basketballplayer 1")};
+		while (isPunching){
+			if (count >= indices.Length){
+				isPunching = false;
+				if (PlayerInRange()){
+					fallBar.GetComponent<FallBar>().GetHit();
+				}
+			}
+			else{
+				sprite.SetSprite(indices[count]);
+				count++;	
+				yield return new WaitForSeconds(.1f);
+			}
+		}
 	}
 }
