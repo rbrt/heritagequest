@@ -22,7 +22,7 @@ public class Scrollin : MonoBehaviour {
 		Vector3 leftBasketPos = leftBasket.transform.position;
 		Vector3 rightBasketPos = rightBasket.transform.position;
 		
-		if (!(groundPos.x < -60)){
+		if (!(groundPos.x < -70)){
 			groundPos.x = Mathf.Lerp(groundPos.x, groundPos.x - 1, Time.deltaTime * scrollSpeed);
 			leftBasketPos.x = Mathf.Lerp(leftBasketPos.x, leftBasketPos.x - 1, Time.deltaTime * scrollSpeed);
 			rightBasketPos.x = Mathf.Lerp(rightBasketPos.x, rightBasketPos.x - 1, Time.deltaTime * scrollSpeed);
@@ -37,7 +37,7 @@ public class Scrollin : MonoBehaviour {
 		Vector3 groundPos = transform.position;
 		Vector3 leftBasketPos = leftBasket.transform.position;
 		Vector3 rightBasketPos = rightBasket.transform.position;
-		if (!(groundPos.x > 40)){
+		if (!(groundPos.x > 50)){
 			groundPos.x = Mathf.Lerp(groundPos.x, groundPos.x + 1, Time.deltaTime * scrollSpeed);
 			leftBasketPos.x = Mathf.Lerp(leftBasketPos.x, leftBasketPos.x + 1, Time.deltaTime * scrollSpeed);
 			rightBasketPos.x = Mathf.Lerp(rightBasketPos.x, rightBasketPos.x + 1, Time.deltaTime * scrollSpeed);

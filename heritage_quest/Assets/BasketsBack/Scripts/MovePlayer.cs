@@ -4,9 +4,11 @@ using System.Collections;
 public class MovePlayer : MonoBehaviour {
 
 	public GameObject ladderPrefab,
-					  ground;
+					  ground,
+					  leftBasket,
+					  rightBasket;
 	
-	private Scrollin scrollin;
+	Scrollin scrollin;
 	
 	GameObject playerLadder;
 	
@@ -15,7 +17,11 @@ public class MovePlayer : MonoBehaviour {
 		 isJumping = false,
 		 ladderInPlay = false,
 		 isClimbingUp = false,
-		 isClimbingDown = false;
+		 isClimbingDown = false,
+		 isPunching = false,
+		 isFacingLeft = true, // punch direction
+		 isInLeftBasket = false,
+		 isInRightBasket = false;
 	
 	float jumpVal = 10,
 		  moveSpeed = 30,
@@ -32,12 +38,14 @@ public class MovePlayer : MonoBehaviour {
 		// Left
 		if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)){
 			isMovingLeft = true;
+			isFacingLeft = true;
 			isMovingRight = false;
 		}
 		// Right
 		else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)){
 			isMovingRight = true;
 			isMovingLeft = false;
+			isFacingLeft = false;
 		}
 		// Up - (climbing i guess?)
 		else if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)){
@@ -58,7 +66,7 @@ public class MovePlayer : MonoBehaviour {
 			isJumping = true;
 			StartCoroutine(JumpCoroutine());
 		}
-		else if (Input.GetKeyDown(KeyCode.LeftShift)){
+		else if (Input.GetKeyDown(KeyCode.LeftControl)){
 			if (!ladderInPlay){
 				playerLadder = Instantiate(ladderPrefab, transform.position, transform.rotation) as GameObject;	
 				scrollin.ladder = playerLadder;
@@ -67,6 +75,20 @@ public class MovePlayer : MonoBehaviour {
 			else{
 				Destroy(playerLadder);
 				ladderInPlay = false;
+				if (transform.position.y > startHeight){
+					StartCoroutine(FallCoroutine());
+				}
+			}
+		}
+		else if (Input.GetKeyDown(KeyCode.LeftShift)){
+			if (!isPunching){
+				isPunching = true;
+				if (isFacingLeft){
+					StartCoroutine(PunchLeftCoroutine());
+				}
+				else{
+					StartCoroutine(PunchRightCoroutine());
+				}
 			}
 		}
 		
@@ -123,14 +145,35 @@ public class MovePlayer : MonoBehaviour {
 		
 	}
 	
+	void OnCollisionEnter(Collision collision){
+		if (collision.gameObject.name == "LeftBasket"){
+			isInLeftBasket = true;
+			StartCoroutine(RemoveLeftBasketCoroutine());
+		}
+		else if (collision.gameObject.name == "RightBasket"){
+			isInRightBasket = true;
+			StartCoroutine(RemoveRightBasketCoroutine());
+		}
+	}
+	
+	void OnCollisionExit(Collision collision){
+		if (collision.gameObject.name == "LeftBasket"){
+			isInLeftBasket = false;
+		}
+		else if (collision.gameObject.name == "RightBasket"){
+			isInRightBasket = false;
+		}
+	}
+	
 	IEnumerator JumpCoroutine(){
 		bool isFalling = false;
+		bool jumpin = true;
 		float jumpHeight = transform.position.y + jumpVal;
 		float baseHeight = transform.position.y;
-		while (isJumping){
+		while (jumpin){
 			if (transform.position.y >= jumpHeight -2){
 				isFalling = true;
-				isJumping = false;
+				jumpin = false;
 			}
 			else{
 				float height = Mathf.Lerp(transform.position.y, jumpHeight, Time.deltaTime * jumpSpeed);
@@ -143,6 +186,7 @@ public class MovePlayer : MonoBehaviour {
 		while (isFalling){
 			if (transform.position.y <= baseHeight + 2){
 				isFalling = false;
+				isJumping = false;
 				Vector3 pos = transform.position;
 				pos.y = baseHeight;
 				transform.position = pos;
@@ -154,6 +198,93 @@ public class MovePlayer : MonoBehaviour {
 				transform.position = pos;
 				yield return null;
 			}
+		}
+	}
+	
+	IEnumerator FallCoroutine(){
+		bool isFalling = true;
+		while (isFalling){
+			if (transform.position.y <= startHeight + 2){
+				isFalling = false;
+				Vector3 pos = transform.position;
+				pos.y = startHeight;
+				transform.position = pos;
+			}
+			else{
+				float height = Mathf.Lerp(transform.position.y, startHeight, Time.deltaTime * jumpSpeed);
+				Vector3 pos = transform.position;
+				pos.y = height;
+				transform.position = pos;
+				yield return null;
+			}
+		}
+	}
+	
+	IEnumerator PunchLeftCoroutine(){
+		tk2dSprite sprite = GetComponent<tk2dSprite>();
+		
+		int count = 0;
+		int[] indices = new int[]{sprite.GetSpriteIdByName("punchleft1"),
+								  sprite.GetSpriteIdByName("punchleft2"),
+								  sprite.GetSpriteIdByName("punchleft1"),
+								  sprite.GetSpriteIdByName("rudeguy")};
+		while (isPunching){
+			if (count >= indices.Length){
+				isPunching = false;
+			}
+			else{
+				sprite.SetSprite(indices[count]);
+				count++;	
+				yield return new WaitForSeconds(.1f);
+			}
+		}
+	}
+	
+	IEnumerator PunchRightCoroutine(){
+		tk2dSprite sprite = GetComponent<tk2dSprite>();
+		
+		int count = 0;
+		int[] indices = new int[]{sprite.GetSpriteIdByName("punchright1"),
+								  sprite.GetSpriteIdByName("punchright2"),
+								  sprite.GetSpriteIdByName("punchright1"),
+								  sprite.GetSpriteIdByName("rudeguy")};
+		while (isPunching){
+			if (count >= indices.Length){
+				isPunching = false;
+			}
+			else{
+				sprite.SetSprite(indices[count]);
+				count++;	
+				yield return new WaitForSeconds(.1f);
+			}
+		}
+	}
+	
+	IEnumerator RemoveLeftBasketCoroutine(){
+		Basket basket = leftBasket.GetComponent<Basket>();
+		bool removin = true;
+		while (removin){
+			bool basketDone = basket.DecrementBasketCount();
+			if (basketDone){
+				removin = false;
+				basket.gameObject.SetActive(false);
+				Debug.Log ("YOU GOT THAT BASKET BACK");
+			}
+			yield return new WaitForSeconds(1);
+		}
+	}
+	
+	IEnumerator RemoveRightBasketCoroutine(){
+		Basket basket = rightBasket.GetComponent<Basket>();
+		bool removin = true;
+		while (removin){
+			bool basketDone = basket.DecrementBasketCount();
+			if (basketDone){
+				removin = false;
+				basket.gameObject.SetActive(false);
+				Debug.Log ("YOU GOT THAT BASKET BACK");
+			}
+			yield return new WaitForSeconds(1);
 		}
 	}
 }
