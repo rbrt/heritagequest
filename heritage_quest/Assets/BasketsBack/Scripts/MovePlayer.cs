@@ -91,6 +91,9 @@ public class MovePlayer : MonoBehaviour {
 				}
 			}
 		}
+		else if (Input.GetKeyDown(KeyCode.B)){
+			GetComponent<AudioSource>().Play();
+		}
 		
 		// Left
 		if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.LeftArrow)){
