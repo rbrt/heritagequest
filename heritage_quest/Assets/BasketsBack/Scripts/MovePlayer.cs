@@ -3,15 +3,17 @@ using System.Collections;
 
 public class MovePlayer : MonoBehaviour {
 
+	public GameObject ladderPrefab;
 	
 	bool isMovingLeft = false,
 		 isMovingRight = false,
-		 isJumping = false;
+		 isJumping = false,
+		 ladderInPlay = false;
 	
 	float jumpVal = 10,
 		  moveSpeed = 20,
 	 	  jumpSpeed = 10;
-		
+	
 	void Update () {
 		// Left
 		if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)){
@@ -32,9 +34,12 @@ public class MovePlayer : MonoBehaviour {
 			
 		}
 		// Jump
-		else if (Input.GetKeyDown(KeyCode.Space)){
+		else if (Input.GetKeyDown(KeyCode.Space) && !isJumping){
 			isJumping = true;
 			StartCoroutine(JumpCoroutine());
+		}
+		else if (Input.GetKeyDown(KeyCode.LeftShift)){
+			var playerLadder = Instantiate(ladderPrefab, transform.position, transform.rotation) as GameObject;
 		}
 		
 		// Left
