@@ -8,6 +8,8 @@ public class MovePlayer : MonoBehaviour {
 					  leftBasket,
 					  rightBasket;
 	
+	public FallBar fallbar;
+	
 	Scrollin scrollin;
 	
 	GameObject playerLadder;
@@ -21,7 +23,8 @@ public class MovePlayer : MonoBehaviour {
 		 isPunching = false,
 		 isFacingLeft = true, // punch direction
 		 isInLeftBasket = false,
-		 isInRightBasket = false;
+		 isInRightBasket = false,
+		 isKnockedDown = false;
 	
 	float jumpVal = 10,
 		  moveSpeed = 30,
@@ -35,117 +38,130 @@ public class MovePlayer : MonoBehaviour {
 	}
 	
 	void Update () {
-		// Left
-		if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)){
-			isMovingLeft = true;
-			isFacingLeft = true;
-			isMovingRight = false;
-		}
-		// Right
-		else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)){
-			isMovingRight = true;
-			isMovingLeft = false;
-			isFacingLeft = false;
-		}
-		// Up - (climbing i guess?)
-		else if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)){
-			if (ladderInPlay){
-				isClimbingUp = true;
-				isClimbingDown = false;
-			}	
-		}
-		// Down (climbing i guess?)
-		else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)){
-			if (ladderInPlay){
-				isClimbingDown = true;
-				isClimbingUp = false;
-			}	
-		}
-		// Jump
-		else if (Input.GetKeyDown(KeyCode.Space) && !isJumping){
-			isJumping = true;
-			StartCoroutine(JumpCoroutine());
-		}
-		else if (Input.GetKeyDown(KeyCode.LeftControl)){
-			if (!ladderInPlay){
-				playerLadder = Instantiate(ladderPrefab, transform.position, transform.rotation) as GameObject;	
-				scrollin.ladder = playerLadder;
-				ladderInPlay = true;
+		if (!isKnockedDown){
+			// Left
+			if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)){
+				isMovingLeft = true;
+				isFacingLeft = true;
+				isMovingRight = false;
+				StartCoroutine(RunLeftCoroutine());
 			}
-			else{
-				Destroy(playerLadder);
-				ladderInPlay = false;
-				if (transform.position.y > startHeight){
-					StartCoroutine(FallCoroutine());
-				}
+			// Right
+			else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)){
+				isMovingRight = true;
+				isMovingLeft = false;
+				isFacingLeft = false;
+				StartCoroutine(RunRightCoroutine());
 			}
-		}
-		else if (Input.GetKeyDown(KeyCode.LeftShift)){
-			if (!isPunching){
-				isPunching = true;
-				if (isFacingLeft){
-					StartCoroutine(PunchLeftCoroutine());
+			// Up - (climbing i guess?)
+			else if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)){
+				if (ladderInPlay){
+					isClimbingUp = true;
+					isClimbingDown = false;
+				}	
+			}
+			// Down (climbing i guess?)
+			else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)){
+				if (ladderInPlay){
+					isClimbingDown = true;
+					isClimbingUp = false;
+				}	
+			}
+			// Jump
+			else if (Input.GetKeyDown(KeyCode.Space) && !isJumping){
+				isJumping = true;
+				StartCoroutine(JumpCoroutine());
+			}
+			else if (Input.GetKeyDown(KeyCode.LeftControl)){
+				if (!ladderInPlay){
+					playerLadder = Instantiate(ladderPrefab, transform.position, transform.rotation) as GameObject;	
+					scrollin.ladder = playerLadder;
+					ladderInPlay = true;
 				}
 				else{
-					StartCoroutine(PunchRightCoroutine());
+					Destroy(playerLadder);
+					ladderInPlay = false;
+					if (transform.position.y > startHeight){
+						StartCoroutine(FallCoroutine());
+					}
 				}
 			}
-		}
-		else if (Input.GetKeyDown(KeyCode.B)){
-			GetComponent<AudioSource>().Play();
-		}
-		
-		// Left
-		if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.LeftArrow)){
-			isMovingLeft = false;		
-		}
-		// Right
-		else if (Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.RightArrow)){
-			isMovingRight = false;
-		}
-		// Up - (climbing i guess?)
-		else if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.UpArrow)){
-			if (ladderInPlay){
-				isClimbingUp = false;
-			}	
-		}
-		// Down (climbing i guess?)
-		else if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow)){
-			if (ladderInPlay){
-				isClimbingDown = false;
-			}	
-		}
-		
-		Vector3 pos = transform.position;
-		if (isMovingLeft && !ladderInPlay ){
-			if (pos.x <= - 10){
-				scrollin.scrollRight();
+			else if (Input.GetKeyDown(KeyCode.LeftShift)){
+				if (!isPunching){
+					isPunching = true;
+					if (isFacingLeft){
+						StartCoroutine(PunchLeftCoroutine());
+					}
+					else{
+						StartCoroutine(PunchRightCoroutine());
+					}
+				}
 			}
-			else{
-				pos.x = Mathf.Lerp(transform.position.x, transform.position.x - 1, Time.deltaTime * moveSpeed);
+			else if (Input.GetKeyDown(KeyCode.B)){
+				GetComponent<AudioSource>().Play();
 			}
+			
+			// Left
+			if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.LeftArrow)){
+				isMovingLeft = false;		
+			}
+			// Right
+			else if (Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.RightArrow)){
+				isMovingRight = false;
+			}
+			// Up - (climbing i guess?)
+			else if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.UpArrow)){
+				if (ladderInPlay){
+					isClimbingUp = false;
+				}	
+			}
+			// Down (climbing i guess?)
+			else if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow)){
+				if (ladderInPlay){
+					isClimbingDown = false;
+				}	
+			}
+			
+			Vector3 pos = transform.position;
+			if (isMovingLeft && !ladderInPlay ){
+				if (pos.x <= - 10){
+					scrollin.scrollRight();
+				}
+				else{
+					pos.x = Mathf.Lerp(transform.position.x, transform.position.x - 1, Time.deltaTime * moveSpeed);
+				}
+			}
+			else if (isMovingRight && !ladderInPlay){
+				if (pos.x >= 10){
+					scrollin.scrollLeft();
+				}
+				else{
+					pos.x = Mathf.Lerp(transform.position.x, transform.position.x + 1, Time.deltaTime * moveSpeed);
+				}
+			}
+			if (isClimbingUp){
+				if (pos.y < startHeight + 15){
+					pos.y = Mathf.Lerp(pos.y, pos.y + 1, Time.deltaTime * climbingSpeed);	
+				}
+			}
+			else if (isClimbingDown){
+				if (pos.y > startHeight){
+					pos.y = Mathf.Lerp(pos.y, pos.y - 1, Time.deltaTime * climbingSpeed);
+				}
+			}
+			
+			transform.position = pos;
 		}
-		else if (isMovingRight && !ladderInPlay){
-			if (pos.x >= 10){
-				scrollin.scrollLeft();
-			}
-			else{
-				pos.x = Mathf.Lerp(transform.position.x, transform.position.x + 1, Time.deltaTime * moveSpeed);
-			}
-		}
-		if (isClimbingUp){
-			if (pos.y < startHeight + 15){
-				pos.y = Mathf.Lerp(pos.y, pos.y + 1, Time.deltaTime * climbingSpeed);	
-			}
-		}
-		else if (isClimbingDown){
-			if (pos.y > startHeight){
-				pos.y = Mathf.Lerp(pos.y, pos.y - 1, Time.deltaTime * climbingSpeed);
-			}
-		}
-		
-		transform.position = pos;
-		
+	}
+	
+	public void KnockPlayerDown(){
+		isKnockedDown = true;
+		isMovingLeft = false;
+		isMovingRight = false;
+		isPunching = false;
+		isInLeftBasket = false;
+		isInRightBasket = false;
+		StartCoroutine(KnockDownCoroutine());
 	}
 	
 	void OnCollisionEnter(Collision collision){
@@ -289,5 +305,75 @@ public class MovePlayer : MonoBehaviour {
 			}
 			yield return new WaitForSeconds(1);
 		}
+	}
+	
+	IEnumerator RunLeftCoroutine(){
+		tk2dSprite sprite = GetComponent<tk2dSprite>();
+		
+		int count = 0;
+		int[] indices = new int[]{sprite.GetSpriteIdByName("runleft1"),
+								  sprite.GetSpriteIdByName("runleft2"),
+								  sprite.GetSpriteIdByName("runleft1"),
+								  sprite.GetSpriteIdByName("rudeguy")};
+		while (isMovingLeft){
+			if (count >= indices.Length){
+				count = 0;
+			}
+			else{
+				sprite.SetSprite(indices[count]);
+				count++;	
+				yield return new WaitForSeconds(.1f);
+			}
+		}
+		sprite.SetSprite(indices[indices.Length-1]);
+	}
+	
+	IEnumerator RunRightCoroutine(){
+		tk2dSprite sprite = GetComponent<tk2dSprite>();
+		
+		int count = 0;
+		int[] indices = new int[]{sprite.GetSpriteIdByName("runright1"),
+								  sprite.GetSpriteIdByName("runright2"),
+								  sprite.GetSpriteIdByName("runright1"),
+								  sprite.GetSpriteIdByName("rudeguy")};
+		while (isMovingRight){
+			if (count >= indices.Length){
+				count = 0;
+			}
+			else{
+				sprite.SetSprite(indices[count]);
+				count++;	
+				yield return new WaitForSeconds(.1f);
+			}
+		}
+		sprite.SetSprite(indices[indices.Length-1]);
+	}
+	
+	IEnumerator KnockDownCoroutine(){
+		tk2dSprite sprite = GetComponent<tk2dSprite>();
+		bool gettingHit = true;
+		
+		int count = 0;
+		int[] indices = new int[]{sprite.GetSpriteIdByName("playerfall1"),
+								  sprite.GetSpriteIdByName("playerfall2"),
+								  sprite.GetSpriteIdByName("playerfall1"),
+								  sprite.GetSpriteIdByName("playerfall2"),
+								  sprite.GetSpriteIdByName("playerfall1"),
+								  sprite.GetSpriteIdByName("playerfall2"),
+								  sprite.GetSpriteIdByName("playerfall1"),
+								  sprite.GetSpriteIdByName("playerfall2"),};
+		while (gettingHit){
+			if (count >= indices.Length){
+				gettingHit = false;
+				isKnockedDown = false;
+				sprite.SetSprite(sprite.GetSpriteIdByName("rudeguy"));
+			}
+			else{
+				sprite.SetSprite(indices[count]);
+				count++;	
+				yield return new WaitForSeconds(.4f);
+			}
+		}
+		fallbar.CanHitAgain();
 	}
 }
