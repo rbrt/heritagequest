@@ -3,16 +3,30 @@ using System.Collections;
 
 public class MovePlayer : MonoBehaviour {
 
-	public GameObject ladderPrefab;
+	public GameObject ladderPrefab,
+					  ground;
+	
+	private Scrollin scrollin;
+	
+	GameObject playerLadder;
 	
 	bool isMovingLeft = false,
 		 isMovingRight = false,
 		 isJumping = false,
-		 ladderInPlay = false;
+		 ladderInPlay = false,
+		 isClimbingUp = false,
+		 isClimbingDown = false;
 	
 	float jumpVal = 10,
-		  moveSpeed = 20,
-	 	  jumpSpeed = 10;
+		  moveSpeed = 30,
+	 	  jumpSpeed = 10,
+		  climbingSpeed = 10,
+		  startHeight;
+	
+	void Start(){
+		scrollin = ground.GetComponent<Scrollin>();
+		startHeight = transform.position.y;
+	}
 	
 	void Update () {
 		// Left
@@ -27,11 +41,17 @@ public class MovePlayer : MonoBehaviour {
 		}
 		// Up - (climbing i guess?)
 		else if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)){
-			
+			if (ladderInPlay){
+				isClimbingUp = true;
+				isClimbingDown = false;
+			}	
 		}
 		// Down (climbing i guess?)
 		else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)){
-			
+			if (ladderInPlay){
+				isClimbingDown = true;
+				isClimbingUp = false;
+			}	
 		}
 		// Jump
 		else if (Input.GetKeyDown(KeyCode.Space) && !isJumping){
@@ -39,7 +59,15 @@ public class MovePlayer : MonoBehaviour {
 			StartCoroutine(JumpCoroutine());
 		}
 		else if (Input.GetKeyDown(KeyCode.LeftShift)){
-			var playerLadder = Instantiate(ladderPrefab, transform.position, transform.rotation) as GameObject;
+			if (!ladderInPlay){
+				playerLadder = Instantiate(ladderPrefab, transform.position, transform.rotation) as GameObject;	
+				scrollin.ladder = playerLadder;
+				ladderInPlay = true;
+			}
+			else{
+				Destroy(playerLadder);
+				ladderInPlay = false;
+			}
 		}
 		
 		// Left
@@ -52,20 +80,45 @@ public class MovePlayer : MonoBehaviour {
 		}
 		// Up - (climbing i guess?)
 		else if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.UpArrow)){
-			
+			if (ladderInPlay){
+				isClimbingUp = false;
+			}	
 		}
 		// Down (climbing i guess?)
 		else if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow)){
-			
+			if (ladderInPlay){
+				isClimbingDown = false;
+			}	
 		}
 		
 		Vector3 pos = transform.position;
-		if (isMovingLeft){
-			pos.x = Mathf.Lerp(transform.position.x, transform.position.x - 1, Time.deltaTime * moveSpeed);
+		if (isMovingLeft && !ladderInPlay ){
+			if (pos.x <= - 10){
+				scrollin.scrollRight();
+			}
+			else{
+				pos.x = Mathf.Lerp(transform.position.x, transform.position.x - 1, Time.deltaTime * moveSpeed);
+			}
 		}
-		else if (isMovingRight){
-			pos.x = Mathf.Lerp(transform.position.x, transform.position.x + 1, Time.deltaTime * moveSpeed);
+		else if (isMovingRight && !ladderInPlay){
+			if (pos.x >= 10){
+				scrollin.scrollLeft();
+			}
+			else{
+				pos.x = Mathf.Lerp(transform.position.x, transform.position.x + 1, Time.deltaTime * moveSpeed);
+			}
 		}
+		if (isClimbingUp){
+			if (pos.y < startHeight + 15){
+				pos.y = Mathf.Lerp(pos.y, pos.y + 1, Time.deltaTime * climbingSpeed);	
+			}
+		}
+		else if (isClimbingDown){
+			if (pos.y > startHeight){
+				pos.y = Mathf.Lerp(pos.y, pos.y - 1, Time.deltaTime * climbingSpeed);
+			}
+		}
+		
 		transform.position = pos;
 		
 	}
