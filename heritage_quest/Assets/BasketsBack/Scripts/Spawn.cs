@@ -40,6 +40,7 @@ public class Spawn : MonoBehaviour {
 		else{
 			enemy = Instantiate(enemyPrefab, leftSpawn.transform.position, rightSpawn.transform.rotation) as GameObject;
 		}
+		enemy.transform.parent = transform.parent;
 		enemy.GetComponent<Enemy>().player = player;
 		enemy.GetComponentInChildren<FallBar>().player = player;
 		enemy.GetComponent<Enemy>().fallBar = fallBar;

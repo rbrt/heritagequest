@@ -25,7 +25,8 @@ public class MovePlayer : MonoBehaviour {
 		 isFacingLeft = true, // punch direction
 		 isInLeftBasket = false,
 		 isInRightBasket = false,
-		 isKnockedDown = false;
+		 isKnockedDown = false,
+		 isFallingDown = false;
 	
 	float jumpVal = 10,
 		  moveSpeed = 30,
@@ -69,9 +70,11 @@ public class MovePlayer : MonoBehaviour {
 				}	
 			}
 			// Jump
-			else if (Input.GetKeyDown(KeyCode.Space) && !isJumping){
-				isJumping = true;
-				StartCoroutine(JumpCoroutine());
+			else if (Input.GetKeyDown(KeyCode.Space) && !isJumping && !isFallingDown){
+				if (!isClimbingUp && !isClimbingDown){
+					isJumping = true;
+					StartCoroutine(JumpCoroutine());
+				}
 			}
 			else if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl)){
 				if (!ladderInPlay){
@@ -222,6 +225,7 @@ public class MovePlayer : MonoBehaviour {
 	}
 	
 	IEnumerator FallCoroutine(){
+		isFallingDown = true;
 		bool isFalling = true;
 		while (isFalling){
 			if (transform.position.y <= startHeight + 2){
@@ -238,6 +242,7 @@ public class MovePlayer : MonoBehaviour {
 				yield return null;
 			}
 		}
+		isFallingDown = false;
 	}
 	
 	IEnumerator PunchLeftCoroutine(){
