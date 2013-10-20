@@ -83,7 +83,7 @@ public class movement : MonoBehaviour {
 		RaycastHit hit;
 		Debug.DrawRay(transform.position, (pos - transform.position).normalized);
 		if (Physics.Raycast(transform.position, (pos - transform.position).normalized, out hit, 100)){
-			if (hit.collider.name == "goodtimes" || hit.collider.name == "pan" || hit.collider.name == "trigger" || hit.collider.name == "trigger_burnt"){
+			if (hit.collider.name == "goodtimes" || hit.collider.name == "pan" || hit.collider.name == "trigger" || hit.collider.name == "trigger_burnt" || hit.collider.name == "brain"){
 				doit = true;
 			}
 			Debug.Log (hit.collider.name);
