@@ -292,7 +292,6 @@ public class MovePlayer : MonoBehaviour {
 					offset.x -= 2;
 					if (Physics.Raycast(offset, Vector3.right, out hit, 6f)){
 						hit.collider.gameObject.GetComponent<Enemy>().GetHit(false);	
-						Debug.Log (hit.collider.gameObject.name);
 					}
 				}
 				sprite.SetSprite(indices[count]);
@@ -309,8 +308,7 @@ public class MovePlayer : MonoBehaviour {
 			bool basketDone = basket.DecrementBasketCount();
 			if (basketDone){
 				removin = false;
-				basket.gameObject.SetActive(false);
-				Debug.Log ("YOU GOT THAT BASKET BACK");
+				//basket.gameObject.SetActive(false);
 			}
 			yield return new WaitForSeconds(1);
 		}
@@ -323,8 +321,7 @@ public class MovePlayer : MonoBehaviour {
 			bool basketDone = basket.DecrementBasketCount();
 			if (basketDone){
 				removin = false;
-				basket.gameObject.SetActive(false);
-				Debug.Log ("YOU GOT THAT BASKET BACK");
+				//basket.gameObject.SetActive(false);
 			}
 			yield return new WaitForSeconds(1);
 		}

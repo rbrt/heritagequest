@@ -3,7 +3,12 @@ using System.Collections;
 
 public class Heritage : MonoBehaviour {
 	
-	public GameObject innerPanel;
+	public GameObject innerPanel,
+					  win,
+					  lose;
+	
+	public AudioClip winClip,
+					 loseClip;
 	
 	Vector3 currentScale;
 	
@@ -11,7 +16,7 @@ public class Heritage : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-	
+		
 	}
 	
 	// Update is called once per frame
@@ -25,9 +30,22 @@ public class Heritage : MonoBehaviour {
 		}
 	}
 	
-	public void SetInnerPanel(GameObject panel){
+	public void SetInnerPanel(GameObject panel, bool winner){
 		innerPanel = panel;
 		panel.transform.parent = transform;
+		
+		GameObject.FindGameObjectWithTag("backgroundmusic").GetComponent<AudioSource>().Stop();
+		
+		var audio = GetComponent<AudioSource>();
+		
+		if (winner){
+			audio.clip = winClip;
+		}
+		else{
+			audio.clip = winClip;
+		}
+		audio.Play();
+		
 		
 		innerPanel.transform.localPosition = new Vector3(0, -.038f, -1);
 		
@@ -39,10 +57,10 @@ public class Heritage : MonoBehaviour {
 			}
 		}
 		
-		StartCoroutine(PanBackCoroutine());
+		StartCoroutine(PanBackCoroutine(winner));
 	}
 	
-	IEnumerator PanBackCoroutine(){
+	IEnumerator PanBackCoroutine(bool winner){
 		bool pan = true;
 		Vector3 originalScale = transform.localScale,
 				targetScale = new Vector3 (49, 37, 1);
@@ -60,7 +78,12 @@ public class Heritage : MonoBehaviour {
 			currentScale = new Vector3(newx, newy, currentScale.z);
 			yield return null;
 		}
-		
-		//currentScale = targetScale;
+		if (winner){
+			win.gameObject.SetActive(true);
+		}
+		else{
+			lose.gameObject.SetActive(true);
+		}
+		currentScale = targetScale;
 	}
 }

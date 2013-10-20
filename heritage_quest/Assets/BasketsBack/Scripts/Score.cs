@@ -17,7 +17,7 @@ public class Score : MonoBehaviour {
 			victoryPanel.transform.localScale = new Vector3(49, 37, 1);
 			victoryPanel.transform.eulerAngles = new Vector3(0, 0, 180);
 			victoryPanel.transform.position = new Vector3(0, -.04f, -1);
-			GameObject.FindGameObjectWithTag("Heritage").GetComponent<Heritage>().SetInnerPanel(victoryPanel);
+			GameObject.FindGameObjectWithTag("Heritage").GetComponent<Heritage>().SetInnerPanel(victoryPanel, true);
 			count = 1;
 			tookScreen = false;
 		}

@@ -55,7 +55,6 @@ public class SelectionMenu : MonoBehaviour {
 				choice = 0;
 			}
 		}
-		Debug.Log (currentSelection);
 	}
 	
 	// Update is called once per frame

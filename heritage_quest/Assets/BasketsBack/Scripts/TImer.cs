@@ -3,7 +3,7 @@ using System.Collections;
 
 public class TImer : MonoBehaviour {
 	
-	int time = 60,
+	int time = 40,
 		count = 0;
 	
 	public tk2dSprite countdown;
@@ -40,7 +40,7 @@ public class TImer : MonoBehaviour {
 			victoryPanel.transform.localScale = new Vector3(49, 37, 1);
 			victoryPanel.transform.eulerAngles = new Vector3(0, 0, 180);
 			victoryPanel.transform.position = new Vector3(0, -.04f, -1);
-			GameObject.FindGameObjectWithTag("Heritage").GetComponent<Heritage>().SetInnerPanel(victoryPanel);
+			GameObject.FindGameObjectWithTag("Heritage").GetComponent<Heritage>().SetInnerPanel(victoryPanel, false);
 			count = 1;
 			tookScreen = false;
 		}
