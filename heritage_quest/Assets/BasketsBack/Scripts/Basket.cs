@@ -16,6 +16,8 @@ public class Basket : MonoBehaviour {
 		Debug.Log (basketCount);
 		if (basketCount == 0){
 			basketCount--;
+			Score score = GameObject.FindGameObjectWithTag("Score").GetComponentInChildren<Score>();
+			score.IncrementScore();
 			return true;
 		}
 		// Avoid duplicate basket removals or something

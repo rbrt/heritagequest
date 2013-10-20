@@ -11,7 +11,7 @@ public class Enemy : MonoBehaviour {
 		 isMovingRight = false,
 		 isPunching = false;
 	
-	float moveSpeed = 2;
+	float moveSpeed = 10;
 	
 	
 	// Update is called once per frame

@@ -68,7 +68,6 @@ public class FallBar : MonoBehaviour {
 		
 		Vector3 dest = new Vector3(randx, Random.Range (-30,60), transform.parent.position.z);
 		
-		Debug.Log (dest);
 		int count = 100;
 		
 		int spin = 5;
@@ -83,5 +82,6 @@ public class FallBar : MonoBehaviour {
 			yield return null;
 		}
 		Destroy (transform.parent.gameObject);
+		GameObject.FindGameObjectWithTag("Ground").GetComponent<Scrollin>().RemoveEnemy(transform.parent.gameObject);
 	}
 }

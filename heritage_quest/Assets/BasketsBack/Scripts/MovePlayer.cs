@@ -73,7 +73,7 @@ public class MovePlayer : MonoBehaviour {
 				isJumping = true;
 				StartCoroutine(JumpCoroutine());
 			}
-			else if (Input.GetKeyDown(KeyCode.LeftControl)){
+			else if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl)){
 				if (!ladderInPlay){
 					playerLadder = Instantiate(ladderPrefab, transform.position, transform.rotation) as GameObject;	
 					scrollin.ladder = playerLadder;
@@ -87,7 +87,7 @@ public class MovePlayer : MonoBehaviour {
 					}
 				}
 			}
-			else if (Input.GetKeyDown(KeyCode.LeftShift)){
+			else if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift)){
 				if (!isPunching){
 					isPunching = true;
 					if (isFacingLeft){
@@ -392,6 +392,7 @@ public class MovePlayer : MonoBehaviour {
 				yield return new WaitForSeconds(.4f);
 			}
 		}
+		yield return new WaitForSeconds(5);
 		fallbar.CanHitAgain();
 	}
 }
