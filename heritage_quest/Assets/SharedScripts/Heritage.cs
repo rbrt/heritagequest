@@ -19,6 +19,10 @@ public class Heritage : MonoBehaviour {
 		if (ready){
 			transform.localScale = currentScale;
 		}
+		
+		if (Input.GetKey(KeyCode.Return)){
+			Application.LoadLevel("Menu");
+		}
 	}
 	
 	public void SetInnerPanel(GameObject panel){
