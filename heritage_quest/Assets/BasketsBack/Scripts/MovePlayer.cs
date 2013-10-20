@@ -6,7 +6,8 @@ public class MovePlayer : MonoBehaviour {
 	public GameObject ladderPrefab,
 					  ground,
 					  leftBasket,
-					  rightBasket;
+					  rightBasket,
+					  hitbox;
 	
 	public FallBar fallbar;
 	
@@ -252,6 +253,14 @@ public class MovePlayer : MonoBehaviour {
 				isPunching = false;
 			}
 			else{
+				if (count == 1){
+					RaycastHit hit;
+					Vector3 offset = transform.position;
+					offset.x += 2;
+					if (Physics.Raycast(offset, -1 * Vector3.right, out hit, 6f)){
+						hit.collider.gameObject.GetComponent<Enemy>().GetHit(true);	
+					}
+				}
 				sprite.SetSprite(indices[count]);
 				count++;	
 				yield return new WaitForSeconds(.1f);
@@ -272,6 +281,15 @@ public class MovePlayer : MonoBehaviour {
 				isPunching = false;
 			}
 			else{
+				if (count == 1){
+					RaycastHit hit;
+					Vector3 offset = transform.position;
+					offset.x -= 2;
+					if (Physics.Raycast(offset, Vector3.right, out hit, 6f)){
+						hit.collider.gameObject.GetComponent<Enemy>().GetHit(false);	
+						Debug.Log (hit.collider.gameObject.name);
+					}
+				}
 				sprite.SetSprite(indices[count]);
 				count++;	
 				yield return new WaitForSeconds(.1f);

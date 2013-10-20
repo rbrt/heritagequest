@@ -4,7 +4,8 @@ using System.Collections;
 public class Enemy : MonoBehaviour {
 	
 	public GameObject player,
-				      fallBar;
+				      fallBar,
+					  selfFallBar;
 	
 	bool isMovingLeft = false,
 		 isMovingRight = false,
@@ -63,7 +64,12 @@ public class Enemy : MonoBehaviour {
 	
 	
 	bool PlayerInRange(){
-		return Mathf.Abs(player.transform.position.x - transform.position.x) < 5;
+		return Mathf.Abs(player.transform.position.x - transform.position.x) < 5 &&
+			   Mathf.Abs(player.transform.position.y - transform.position.y) < 5;
+	}
+	
+	public void GetHit(bool left){
+		selfFallBar.GetComponent<FallBar>().GetHit(left);	
 	}
 	
 	
@@ -120,11 +126,13 @@ public class Enemy : MonoBehaviour {
 		while (isPunching){
 			if (count >= indices.Length){
 				isPunching = false;
-				if (PlayerInRange()){
-					fallBar.GetComponent<FallBar>().GetHit();
-				}
 			}
 			else{
+				if (count == 1){
+					if (PlayerInRange()){
+					fallBar.GetComponent<FallBar>().GetHit(true);
+					}
+				}
 				sprite.SetSprite(indices[count]);
 				count++;	
 				yield return new WaitForSeconds(.1f);
@@ -143,11 +151,13 @@ public class Enemy : MonoBehaviour {
 		while (isPunching){
 			if (count >= indices.Length){
 				isPunching = false;
-				if (PlayerInRange()){
-					fallBar.GetComponent<FallBar>().GetHit();
-				}
 			}
 			else{
+				if (count == 1){
+					if (PlayerInRange()){
+						fallBar.GetComponent<FallBar>().GetHit(false);
+					}
+				}
 				sprite.SetSprite(indices[count]);
 				count++;	
 				yield return new WaitForSeconds(.1f);
