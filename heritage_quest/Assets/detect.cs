@@ -19,11 +19,24 @@ public class detect : MonoBehaviour {
 		}
 	}
 	
+	
 	// Update is called once per frame
 	void Update () {
+			
 		if (hit){
 			var sprite = thought.gameObject.GetComponent<tk2dSprite>();
 			sprite.SetSprite(thoughtSprite);
+			if (thoughtSprite == "thought_burnttoast"){
+				var thing = GameObject.FindGameObjectWithTag("soundeffectplayer").GetComponent<SoundPlayer>();
+				thing.PlayBurntToast();
+			}
+			if (thoughtSprite == "thought_waves"){
+				var thing = GameObject.FindGameObjectWithTag("soundeffectplayer").GetComponent<SoundPlayer>();
+				thing.PlayColdWater();
+			}
 		}
+		
+		
+		
 	}
 }

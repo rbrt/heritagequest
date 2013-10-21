@@ -103,8 +103,11 @@ public class movement : MonoBehaviour {
 		}
 		//If player clicks on seizurebrainbit then its position gets locked to player's position
 		if (canPick)
-			if (Input.GetMouseButtonDown(0))
+			if (Input.GetMouseButtonDown(0)){
 				locked = true;
+				var thing = GameObject.FindGameObjectWithTag("soundeffectplayer").GetComponent<SoundPlayer>();
+				thing.PlayColdWater();
+			}
 		else if (locked)
 			if (Input.GetMouseButtonDown(0))
 				locked = false;

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class Heritage : MonoBehaviour {
 	
@@ -34,7 +35,12 @@ public class Heritage : MonoBehaviour {
 		innerPanel = panel;
 		panel.transform.parent = transform;
 		
-		GameObject.FindGameObjectWithTag("backgroundmusic").GetComponent<AudioSource>().Stop();
+		try{
+			GameObject.FindGameObjectWithTag("backgroundmusic").GetComponent<AudioSource>().Stop();
+		}
+		catch (NullReferenceException){
+			
+		}
 		
 		var audio = GetComponent<AudioSource>();
 		
@@ -50,6 +56,12 @@ public class Heritage : MonoBehaviour {
 		innerPanel.transform.localPosition = new Vector3(0, -.038f, -1);
 		
 		GetComponent<MeshRenderer>().enabled = true;
+		if (gameObject.name == "HeritageBox2"){
+			foreach (var child in GetComponentsInChildren<MeshRenderer>()){
+				child.enabled = true;
+			}
+		}
+		
 		GameObject root = Camera.main.gameObject;
 		foreach (var node in root.GetComponentsInChildren<Transform>()){
 			if (node.tag != "MainCamera"){
