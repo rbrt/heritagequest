@@ -68,7 +68,7 @@ public class SelectionMenu : MonoBehaviour {
 				Application.LoadLevel("basketsback");
 			}
 			else{
-				Debug.Log ("Not yet implemented");
+				Application.LoadLevel("braingame");
 			}
 		}
 		

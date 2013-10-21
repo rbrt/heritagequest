@@ -18,12 +18,17 @@ public class Screencap : MonoBehaviour {
         	texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
 			texture.Apply();
 			
-			material = new Material (Shader.Find(" Diffuse"));
+			material = new Material (Shader.Find("Self-Illumin/Diffuse"));
 			material.SetTextureScale("Tiling", new Vector2(100,0));
 			material.mainTexture = texture;
 			
 			takeScreen = false;
-			TImer time = GameObject.FindGameObjectWithTag("Timer").GetComponent<TImer>();
+			try{
+				TImer time = GameObject.FindGameObjectWithTag("Timer").GetComponent<TImer>();
+			}
+			catch (NullReferenceException){
+				Debug.Log ("ughhhh");
+			}
 			callback();
 		}
 	}
